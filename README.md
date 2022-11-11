@@ -1,6 +1,8 @@
 # MudBlazor-Template
 
 __This is my Defaut-Theme when i am doing a project with mudblazor and mysql.__
+__And i added Authorization yay__
+
 >Maybe you like it too.
 
 ![Index Image](/Index.png)
