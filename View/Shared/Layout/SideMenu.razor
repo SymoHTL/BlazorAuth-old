@@ -1,0 +1,96 @@
+﻿@inject IThemeHandler ThemeHandler
+@implements IDisposable
+
+<MudDrawer Breakpoint="Breakpoint.Md"
+           Class="side-menu"
+           Elevation="0"
+           MiniWidth="100px"
+           OpenMiniOnHover="ThemeHandler.SideOpenMini"
+           Variant="DrawerVariant.Mini"
+           Width="280px" OpenChanged="@(value => {if (ThemeHandler.SideOpenMini) { ThemeHandler.SideOpen = value; } })"
+           DisableOverlay="true"
+           Open="ThemeHandler.SideOpen">
+    <MudDrawerHeader Class="align-center d-flex justify-center pa-0">
+        <MudIconButton Color="Color.Primary"
+                       Icon="@Icons.Filled.Home"
+                       Size="Size.Large"
+                       Href="/"/>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        @foreach (var navItem in _menuSectionItems) {
+            <MudNavLink Href="@(navItem.Href)" Icon="@(navItem.Icon)" Match="NavLinkMatch.All" Class="icon-hover">
+                <div class="d-flex">
+                    <MudText Inline="true">@navItem.Title</MudText>
+                </div>
+            </MudNavLink>
+        }
+    </MudNavMenu>
+</MudDrawer>
+
+<style>
+    .icon-hover:hover .mud-icon-root {
+         fill:  var(--mud-palette-secondary);
+    }
+    .mud-nav-link {
+        white-space: normal !important;
+        padding: 12px 16px 12px 38px;
+    }
+    .mud-nav-link:hover {
+        color: var(--mud-palette-secondary);
+        background-color: blue;
+    }
+    .mud-navmenu.mud-navmenu-default .mud-nav-link.active:not(.mud-nav-link-disabled) {
+        background-color: rgba(var(--mud-palette-primary-rgb), 0.1);
+        border-right: 3px solid var(--mud-palette-primary);
+    }
+    .side-menu {
+        border-right: 1px solid rgba(var(--mud-palette-secondary-rgb), 0.4);
+    }
+</style>
+
+@code {
+
+    protected override void OnInitialized() {
+        ThemeHandler.ThemeChange += Invoker;
+    }
+
+
+    public void Dispose() {
+        ThemeHandler.ThemeChange -= Invoker;
+    }
+
+
+    private async void Invoker() {
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    private List<MenuSectionItemModel> _menuSectionItems = new() {
+        new MenuSectionItemModel {
+            Title = "Dummy Link 1",
+            Icon = Icons.Filled.WorkOutline,
+            Href = "1"
+        },
+        new MenuSectionItemModel {
+            Title = "Dummy Link 2",
+            Icon = Icons.Rounded.FormatListBulleted,
+            Href = "2"
+        },
+        new MenuSectionItemModel {
+            Title = "Dummy Link 3",
+            Icon = Icons.Filled.PeopleAlt,
+            Href = "3"
+        },
+        new MenuSectionItemModel {
+            Title = "Dummy Link 4",
+            Icon = Icons.Filled.RequestPage,
+            Href = "4"
+        },
+        new MenuSectionItemModel {
+            Title = "Dummy Link 5",
+            Icon = Icons.Filled.BugReport,
+            Href = "5"
+        }
+    };
+
+}

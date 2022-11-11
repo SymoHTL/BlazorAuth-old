@@ -1,0 +1,122 @@
+﻿@page "/auth/register"
+@inject UserService UserService
+@inject ILogger<Login> Logger
+@using Domain.Exceptions
+@inherits CancellationComponent
+
+
+<MudCard Class="position-relative w-100">
+    <MudCardHeader>
+        <MudText Typo="Typo.h5">Register</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <div @onkeydown="@TryRegister">
+            <MudForm @ref="_form">
+                @if (_error is not null) {
+                    <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => _error = null">
+                        @(_error)
+                    </MudAlert>
+                }
+                <MudTextField
+                    T="string"
+                    InputMode="InputMode.text" InputType="InputType.Text" Immediate="true"
+                    Counter="32" MaxLength="32"
+                    Label="Username" HelperText="Min. 4, Max. 50 characters | Allowed chars: A-Z 0-9 . _ - "
+                    @bind-Value="RegUser.Username"
+                    For="() => RegUser.Username"/>
+                <MudTextField
+                    T="string"
+                    InputMode="InputMode.text" InputType="InputType.Text" Immediate="true"
+                    Counter="50" MaxLength="50"
+                    Label="Email" Mask="RegexMask.Email()"
+                    @bind-Value="RegUser.Email"
+                    For="() => RegUser.Email"/>
+                <MudTextField
+                    T="string"
+                    InputMode="InputMode.text" InputType="_passwordInputType" Immediate="true"
+                    Label="Password" HelperText="Choose a strong password | Min 6 chars"
+                    Adornment="Adornment.End"
+                    AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="ShowPwd"
+                    @bind-Value="RegUser.LoginPassword"
+                    For="() => RegUser.LoginPassword"/>
+            </MudForm>
+        </div>
+        <MudOverlay @bind-Visible="_isRegistering" DarkBackground="true" AutoClose="false" Absolute="true">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" StrokeWidth="5"/>
+                </MudOverlay>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await HandleRegisterAsync()">
+            Register
+        </MudButton>
+        <MudSpacer/>
+        <a href="auth/login">
+            <MudText Typo="Typo.subtitle1">
+                Already have an account?
+            </MudText>
+        </a>
+    </MudCardActions>
+</MudCard>
+
+
+@code {
+    
+    bool _isRegistering;
+    MudForm _form = null!;
+    string? _error;
+
+    bool _isShow;
+    string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+    InputType _passwordInputType = InputType.Password;
+
+    User RegUser { get; } = new();
+
+    void ShowPwd() {
+        if (_isShow) {
+            _isShow = false;
+            _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+            _passwordInputType = InputType.Password;
+        }
+        else {
+            _isShow = true;
+            _passwordInputIcon = Icons.Material.Filled.Visibility;
+            _passwordInputType = InputType.Text;
+        }
+    }
+
+    async void TryRegister(KeyboardEventArgs e) {
+        if (e.Code is "Enter" or "NumpadEnter")
+            await HandleRegisterAsync();
+    }
+
+    async Task HandleRegisterAsync() {
+        try {
+            if (!await _form.IsFormValidAsync()) return;
+            _isRegistering = true;
+            await UserService.RegisterAsync(RegUser);
+            await UserService.LoginAsync(new LoginModel(RegUser.Email, RegUser.LoginPassword));
+        }
+        catch (DuplicateEmailException) {
+            _error = "Invalid email!";
+        }
+        catch (LoginException) {
+            _error = "Invalid email or Password!";
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Login canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Login canceled");
+        }
+        catch (Exception e) {
+            Logger.LogCritical("Login failed: {Message} \n", e.Message);
+            Logger.LogCritical("Login failed: {StackTrace} \n", e.StackTrace);
+        }
+        finally {
+            _isRegistering = false;
+        }
+    }
+
+
+    
+}

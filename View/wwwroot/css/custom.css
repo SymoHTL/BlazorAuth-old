@@ -1,0 +1,19 @@
+.theme-button {
+    position: fixed;
+    bottom: 0;
+    background-color: rgba(var(--mud-palette-primary-rgb), 0.5);
+    z-index: 4999;
+    right: 0;
+    cursor: pointer;
+    box-shadow: rgba(55, 55, 55, 0.15) 0 0 2px 0, rgba(55, 55, 55, 0.15) 0 8px 12px 0;
+}
+
+.mode-button {
+    border: 1px solid var(--mud-palette-table-lines);
+    height: 50px;
+}
+
+::selection {
+    color: white;
+    background: var(--mud-palette-secondary);
+}

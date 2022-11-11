@@ -1,0 +1,52 @@
+﻿@inject UserService UserService
+@inject ILogger<AccountMenu> Logger
+@inherits CancellationComponent
+
+<MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+    <ActivatorContent>
+        <MudAvatar Color="Color.Primary" Size="Size.Large">@UserService.CurrentUser?.Username[0]</MudAvatar>
+    </ActivatorContent>
+    <ChildContent>
+        <div class="py-4"
+             style="min-width: 220px">
+            <MudText Class="px-6 pb-2"
+                     Typo="Typo.h4">
+                <b>@UserService.CurrentUser?.Username</b>
+            </MudText>
+            <MudDivider Class="my-2"/>
+
+            <div class="mt-6 mx-4">
+                <MudButton Color="Color.Error"
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Logout"
+                           Variant="Variant.Outlined"
+                           OnClick="LogOut">
+                    Logout
+                </MudButton>
+            </div>
+        </div>
+    </ChildContent>
+</MudMenu>
+
+@code {
+
+    [Parameter]
+    public AuthenticationState AuthenticationState { get; set; } = null!;
+
+    private async void LogOut() {
+        try {
+            await UserService.LogoutAsync();
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Logout canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Logout canceled");
+        }
+        catch (Exception e) {
+            Logger.LogCritical("Logout failed: {Message} \n", e.Message);
+            Logger.LogCritical("Logout failed: {StackTrace} \n", e.StackTrace);
+        }
+    }
+
+}

@@ -1,0 +1,38 @@
+@page "/"
+@inject UserService UserService
+
+<h1>Welcome to my template.</h1>
+
+
+<MudLink Typo="Typo.h1" Color="Color.Primary" Href="https://mudblazor.com/" Target="_blank">Check out Mudblazor</MudLink>
+
+@*PageTitle is set in App.razor*@
+
+<AuthorizeView>
+    <Authorized>
+        <MudText>
+            @* either this or you can use UserService.CurrentUser (CurrentUser should be set if the user is authorized) *@
+            @UserService.CurrentUser?.Username
+            <br/>
+            @context.User.Identity?.Name
+        </MudText>
+    </Authorized>
+    <Authorizing>
+        <MudText>How long does this load???</MudText>
+    </Authorizing>
+    <NotAuthorized>
+        <MudText>You are currently not logged in!</MudText>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthTask { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync() {
+        //var user = (await AuthTask).User;
+    }
+
+}

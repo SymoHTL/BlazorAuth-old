@@ -1,0 +1,9 @@
+﻿@page "/{Page:int?}"
+<h3>DummyPage @Page</h3>
+
+@code {
+
+    [Parameter]
+    public int? Page { get; set; }
+
+}

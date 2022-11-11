@@ -1,0 +1,15 @@
+﻿@inject IThemeHandler ThemeHandler
+
+<div class="px-4 py-2 rounded-tl-xl theme-button" @onclick="ActivateThemeMenu">
+    <MudTooltip Arrow="true" Placement="Placement.Left" Text="Themes">
+        <MudIcon Icon="@Icons.Material.Filled.Brush" Style="color: #05192d"/>
+    </MudTooltip>
+</div>
+
+@code {
+
+    private void ActivateThemeMenu() {
+        ThemeHandler.UpdateThemeMenu(true);
+    }
+
+}
