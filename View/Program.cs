@@ -26,7 +26,6 @@ builder.Services.AddScoped<IRoleClaimRepository, RoleClaimRepository>();
 
 builder.Services.AddLogging();
 
-builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMudServices(config => {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;

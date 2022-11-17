@@ -42,6 +42,6 @@ public class ModelDbContext : DbContext {
         // OTHER
         // SEEDING
         builder.Entity<Role>()
-            .HasData(new Role { Id = 1, Identifier = "admin", Description = "Administrator" });
+            .HasData(new Role { Id = 1, Identifier = "Admin", Description = "Administrator" });
     }
 }

@@ -40,10 +40,10 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
     }
 
     private async Task<User?> GetUserAsync() {
-            // auth with guid
+            // auth with id
             var id = await _local.GetAsync<int>("id");
 
-            if (id.Success && id.Value is not 0) return await _userRepository.AuthorizeAsync(id.Value);
+            if (id is { Success: true, Value: not 0 }) return await _userRepository.AuthorizeAsync(id.Value);
 
             //    // auth with token if guid is not present
             //var token = await _local.GetAsync<string>("token");
