@@ -1,8 +1,14 @@
 ﻿namespace View.Services;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider {
-    
+
     public User? CurrentUser { get; private set; }
+
+    // cache the current AuthenticationState to avoid unnecessary calls to the server
+    // the state is cached for 5 minutes
+    private AuthenticationState? _cachedState;
+    private DateTime _cachedStateTime;
+    private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
     
     private readonly ProtectedLocalStorage _local;
 
@@ -18,17 +24,32 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
 
     private static AuthenticationState Anonymous => new(new ClaimsPrincipal(new ClaimsIdentity()));
     
+    private void SetCachedState(AuthenticationState state) {
+        _cachedState = state;
+        _cachedStateTime = DateTime.Now;
+    }
+    private void ClearCache() {
+        _cachedState = null;
+        _cachedStateTime = DateTime.MaxValue;
+    }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
         try {
+            // caching
+            if (_cachedState is not null && DateTime.Now - _cachedStateTime < _cacheDuration) 
+                return _cachedState;
+            ClearCache();
+            
             var user = await GetUserAsync();
             if (user is null) return Anonymous;
             CurrentUser = user;
 
             var identity = new ClaimsIdentity(GenerateClaims(user), "GetStateType");
+            var authState = new AuthenticationState(new ClaimsPrincipal(identity));
+            
+            SetCachedState(authState);
 
-
-            return new AuthenticationState(new ClaimsPrincipal(identity));
+            return authState;
         }
         catch (InvalidOperationException) {
             return Anonymous; // most likely because of JavaScript interop
@@ -45,15 +66,6 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
 
             if (id is { Success: true, Value: not 0 }) return await _userRepository.AuthorizeAsync(id.Value);
 
-            //    // auth with token if guid is not present
-            //var token = await _local.GetAsync<string>("token");
-            //if (token.Success && token.Value is not null)
-            //    return await _userRepository.AuthorizeAsync(token.Value);
-
-            //    // auth with email and password if token and guid are not present
-            //var loginObject = await _local.GetAsync<LoginModel>("login");
-            //if (loginObject.Success && loginObject.Value is not null)
-            //    return await _userRepository.AuthorizeAsync(loginObject.Value);
         return null;
     }
 
@@ -67,15 +79,19 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
     }
 
     public async Task Login(User user) {
+        ClearCache();
         CurrentUser = user;
-        var authState =
-            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(GenerateClaims(user), "LoginType")));
+        var authState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(GenerateClaims(user), "LoginType")));
+        
+        SetCachedState(authState);
+        
         NotifyAuthenticationStateChanged(Task.FromResult(authState));
         await _local.SetAsync("id", user.Id);
     }
 
     public async Task Logout() {
         CurrentUser = null;
+        ClearCache();
         await _local.DeleteAsync("id");
         //await _local.DeleteAsync("token");
         //await _local.DeleteAsync("login");

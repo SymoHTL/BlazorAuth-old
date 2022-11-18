@@ -28,11 +28,13 @@
 
 @code {
 
-    [CascadingParameter]
-    public Task<AuthenticationState> AuthTask { get; set; } = null!;
-
     protected override async Task OnInitializedAsync() {
-        //var user = (await AuthTask).User;
+        if (await UserService.IsAuthenticated()) {
+            // do stuff if user is authenticated
+        }
+        if (await UserService.HasRole("Admin")) {
+            // do stuff if user is in role
+        }
     }
 
 }
