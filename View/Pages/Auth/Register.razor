@@ -28,7 +28,7 @@
                     T="string"
                     InputMode="InputMode.text" InputType="InputType.Text" Immediate="true"
                     Counter="50" MaxLength="50"
-                    Label="Email" Mask="RegexMask.Email()"
+                    Label="Email"
                     @bind-Value="RegUser.Email"
                     For="() => RegUser.Email"/>
                 <MudTextField
@@ -114,6 +114,7 @@
         }
         finally {
             _isRegistering = false;
+            StateHasChanged();
         }
     }
 

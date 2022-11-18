@@ -25,7 +25,7 @@
                 }
                 <MudTextField
                     T="string" Immediate="true" InputType="InputType.Text" InputMode="InputMode.text"
-                    Label="Email" Mask="RegexMask.Email()"
+                    Label="Email"
                     @bind-Value="Model.Email"
                     For="() => Model.Email"/>
                 <MudTextField
@@ -106,6 +106,7 @@
         }
         finally {
             _isLoggingIn = false;
+            StateHasChanged();
         }
     }
 
