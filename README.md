@@ -1,4 +1,11 @@
-# MudBlazor-Template
+# MudBlazor-Authorization-Template
+
+[![Yes this actually is a joke](https://img.shields.io/badge/performance---60%25-red "Yes this actually is a joke")](https://github.com/SymoHTL/MudBlazor-Template)
+[![Pizza Pizza](https://img.shields.io/badge/homemade-pizza-blueviolet "Pizza Pizza")](https://github.com/SymoHTL/MudBlazor-Template)
+[![hello darkness my old friend](https://img.shields.io/github/contributors/SymoHTL/BlazorAuth "hello darkness my old friend")](https://github.com/SymoHTL/MudBlazor-Template)
+[![I am not getting any Sleep](https://img.shields.io/github/last-commit/SymoHTL/BlazorAuth "I am not getting any Sleep")](https://github.com/SymoHTL/MudBlazor-Template)
+[![I like .net](https://img.shields.io/badge/dependencies-.net6-blue "I like .net")](https://github.com/SymoHTL/MudBlazor-Template)
+
 
 __This is my Defaut-Theme when i am doing a project with mudblazor and mysql.__
 
