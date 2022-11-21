@@ -1,7 +1,6 @@
 ﻿@page "/auth/login"
 @inject UserService UserService
 @inject ILogger<Login> Logger
-@using Domain.Exceptions
 @inherits CancellationComponent
 
 
@@ -35,6 +34,11 @@
                     AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="ShowPwd"
                     @bind-Value="Model.Password"
                     For="() => Model.Password"/>
+                <MudTextField
+                    T="string" Immediate="true" InputType="InputType.Text" InputMode="InputMode.text"
+                    Label="Device Name"
+                    @bind-Value="Model.DeviceName"
+                    For="() => Model.DeviceName"/>
             </MudForm>
         </div>
         <MudOverlay @bind-Visible="_isLoggingIn" DarkBackground="true" AutoClose="false" LockScroll="true" Absolute="true">
@@ -55,7 +59,7 @@
 
 @code {
     bool _isLoggingIn;
-    
+
     MudForm _from = null!;
     string? _error;
 
@@ -101,8 +105,7 @@
             Logger.LogInformation("Login canceled");
         }
         catch (Exception e) {
-            Logger.LogCritical("Login failed: {Message} \n", e.Message);
-            Logger.LogCritical("Login failed: {StackTrace} \n", e.StackTrace);
+            Logger.LogError(e, "Login failed");
         }
         finally {
             _isLoggingIn = false;

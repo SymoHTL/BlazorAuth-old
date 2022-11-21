@@ -1,0 +1,63 @@
+﻿@inject ITokenRepository TokenRepo
+@inject ILogger<TokenManageComponent> Logger
+
+<MudPaper class="ml-5 rounded-r-xl" Outlined="true" Elevation="5" Square="true">
+
+    @if (_error is not null) {
+        <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => _error = null">
+            @(_error)
+        </MudAlert>
+    }
+    <MudList Color="Color.Secondary" Class="position-relative">
+        <MudVirtualize T="Token" Items="Tokens">
+            <MudListItem Class="d-flex token-list-item p-4 my-4">
+                <div class="d-flex justify-content-between my-1 p-1">
+                    <MudText Class="mr-5" Color="Color.Info">@context.DeviceName</MudText>
+                    <MudText Class="ml-5">Last Login: @context.LastLogin.GetDaysSince()</MudText>
+                </div>
+                <MudSwitch T="bool" Checked="@context.IsRevoked" CheckedChanged="b => HandleRevokedChanged(context, b)" Color="Color.Secondary">Revoked?</MudSwitch>
+                @*<div class="justify-content-end">
+                    <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveToken(context)"></MudIconButton>
+                </div>*@
+            </MudListItem>
+        </MudVirtualize>
+        <MudOverlay Visible="_isLoading" DarkBackground="true" AutoClose="false" Absolute="true">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" StrokeWidth="5"/>
+            </MudOverlay>
+    </MudList>
+</MudPaper>
+
+@code {
+    bool _isLoading;
+    string? _error;
+
+    [Parameter]
+    [EditorRequired]
+    public List<Token> Tokens { get; set; } = null!;
+
+    async Task HandleRevokedChanged(Token token, bool isRevoked) {
+        try {
+            _isLoading = true;
+            token.IsRevoked = isRevoked;
+            await TokenRepo.UpdateAsync(token);
+        }
+        catch (InvalidOperationException e) {
+            _error = e.Message;
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("TokenManagement canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("TokenManagement canceled");
+        }
+        catch (Exception e) {
+            Logger.LogError(e, "TokenManagement failed");
+        }
+        finally {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+    
+
+}

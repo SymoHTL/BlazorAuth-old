@@ -20,6 +20,10 @@ public class ModelDbContext : DbContext {
         builder.Entity<Role>()
             .HasIndex(r => r.Identifier)
             .IsUnique();
+        
+builder.Entity<Token>()
+            .HasIndex(r => r.DeviceName)
+            .IsUnique();
 
 // HAS KEY
 
@@ -28,6 +32,11 @@ public class ModelDbContext : DbContext {
         // RELATIONSHIPS
         // 1:1
         // 1:N
+        builder.Entity<Token>()
+            .HasOne(t => t.User)
+            .WithMany(u => u.Tokens)
+            .HasForeignKey(t => t.UserId);
+
         // N:M
 
         builder.Entity<RoleClaim>()

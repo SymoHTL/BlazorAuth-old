@@ -2,6 +2,7 @@
 
 global using Model.Entities.Theme;
 global using System.Linq.Expressions;
+global using System.Net;
 global using System.Security.Claims;
 global using Domain.Repositories.Interfaces;
 global using Microsoft.AspNetCore.Components.Authorization;

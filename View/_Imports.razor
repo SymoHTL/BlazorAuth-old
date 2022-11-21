@@ -1,6 +1,7 @@
 ﻿@using System.Net.Http
 @using System.Globalization
 @using System.Security.Authentication
+@using System.ComponentModel.DataAnnotations
 
 
 @using Microsoft.AspNetCore.Authorization
@@ -25,9 +26,12 @@
 
 
 
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
 @using Domain.Repositories.Interfaces
 @using Domain.Extensions
-
+@using Domain.Services.Implementations
+@using Domain.Exceptions
 
 @using Model.Entities
 @using Model.Entities.Theme

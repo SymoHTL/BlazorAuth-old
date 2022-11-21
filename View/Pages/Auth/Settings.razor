@@ -1,0 +1,49 @@
+﻿@page "/auth/settings"
+@inject UserService UserService
+@inject IUserRepository UserRepo
+@inject ILogger<Settings> Logger
+@inherits CancellationComponent
+@attribute [Authorize]
+
+<MudTabs Position="Position.Left" Border="true" Outlined="true" Elevation="5" Rounded="true">
+    <MudTabPanel Text="General">
+        <MudForm @ref="_form">
+            <AccountInputComponent User="UserService.CurrentUser" SaveClick="Save" IsLoading="_isLoading" @bind-ErrorMessage="_error"/>
+        </MudForm>
+    </MudTabPanel>
+    <MudTabPanel Text="Tokens">
+        <TokenManageComponent Tokens="UserService.CurrentUser!.Tokens"/>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    MudForm _form = null!;
+    bool _isLoading;
+    string? _error;
+
+    async Task Save() {
+        try {
+            if (!await _form.IsFormValidAsync()) return;
+            _isLoading = true;
+            await UserRepo.UpdateInfoAsync(UserService.CurrentUser!, Cts.Token);
+        }
+        catch (DuplicateEmailException) {
+            _error = "Invalid email!";
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Settings user-update canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Settings user-update canceled");
+        }
+        catch (Exception e) {
+            _error = "An error occurred!";
+            Logger.LogError(e, "Settings user-update failed");
+        }
+        finally {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+}

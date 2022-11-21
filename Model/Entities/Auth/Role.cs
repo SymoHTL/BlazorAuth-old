@@ -8,15 +8,12 @@ public class Role {
     public int Id { get; set; }
 
 
-    [Required] [Column("IDENTIFIER")]
-    public string Identifier { get; set; } = null!;
+    [Required] [Column("IDENTIFIER")] public string Identifier { get; set; } = null!;
 
 
-    [Column("DESCRIPTION")]
-    public string? Description { get; set; }
+    [Column("DESCRIPTION")] public string? Description { get; set; }
 
     public List<RoleClaim> RoleClaims { get; set; } = new();
 
-    [NotMapped]
-    public IEnumerable<User> Users => RoleClaims.Select(rc => rc.User);
+    [NotMapped] public IEnumerable<User> Users => RoleClaims.Select(rc => rc.User);
 }
