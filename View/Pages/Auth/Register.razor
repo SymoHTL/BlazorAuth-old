@@ -103,14 +103,13 @@
             _error = "Invalid email or Password!";
         }
         catch (TaskCanceledException) {
-            Logger.LogInformation("Login canceled");
+            Logger.LogInformation("Register/Login canceled");
         }
         catch (OperationCanceledException) {
-            Logger.LogInformation("Login canceled");
+            Logger.LogInformation("Register/Login canceled");
         }
         catch (Exception e) {
-            Logger.LogCritical("Login failed: {Message} \n", e.Message);
-            Logger.LogCritical("Login failed: {StackTrace} \n", e.StackTrace);
+            Logger.LogError(e, "Register/Login failed");
         }
         finally {
             _isRegistering = false;
