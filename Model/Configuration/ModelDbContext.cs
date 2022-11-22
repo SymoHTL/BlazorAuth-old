@@ -1,6 +1,4 @@
-﻿using Model.Entities.Auth;
-
-namespace Model.Configuration;
+﻿namespace Model.Configuration;
 
 public class ModelDbContext : DbContext {
     public ModelDbContext(DbContextOptions<ModelDbContext> options) : base(options) {

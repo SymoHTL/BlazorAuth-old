@@ -30,10 +30,10 @@
 
     protected override async Task OnInitializedAsync() {
         if (await UserService.IsAuthenticated()) {
-            // do stuff if user is authenticated
+    // do stuff if user is authenticated
         }
         if (await UserService.HasRole("Admin")) {
-            // do stuff if user is in role
+    // do stuff if user is in role
         }
     }
 

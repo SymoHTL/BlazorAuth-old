@@ -1,13 +1,6 @@
-﻿using Domain.Exceptions;
-
-namespace View.Services;
+﻿namespace View.Services;
 
 public class UserService {
-
-    public User? CurrentUser => _authenticationStateProvider.CurrentUser;
-    
-    public Task<AuthenticationState> GetAuthenticationStateAsync() => _authenticationStateProvider.GetAuthenticationStateAsync();
-
     private readonly CustomAuthStateProvider _authenticationStateProvider;
 
     private readonly IUserRepository _userRepository;
@@ -20,11 +13,16 @@ public class UserService {
         _userRepository = userRepository;
     }
 
+    public User? CurrentUser => _authenticationStateProvider.CurrentUser;
+
+    public Task<AuthenticationState> GetAuthenticationStateAsync() =>
+        _authenticationStateProvider.GetAuthenticationStateAsync();
+
     public async Task<bool> IsAuthenticated() {
         var identity = await _authenticationStateProvider.GetAuthenticationStateAsync();
         return identity.User.Identity is { IsAuthenticated: true };
     }
-    
+
     public async Task<bool> HasRole(string role) {
         var identity = await _authenticationStateProvider.GetAuthenticationStateAsync();
         return identity.User.IsInRole(role);

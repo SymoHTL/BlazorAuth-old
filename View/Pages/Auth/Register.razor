@@ -1,7 +1,6 @@
 ﻿@page "/auth/register"
 @inject UserService UserService
 @inject ILogger<Login> Logger
-@using Domain.Exceptions
 @inherits CancellationComponent
 
 
@@ -42,8 +41,8 @@
             </MudForm>
         </div>
         <MudOverlay @bind-Visible="_isRegistering" DarkBackground="true" AutoClose="false" Absolute="true">
-                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" StrokeWidth="5"/>
-                </MudOverlay>
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" StrokeWidth="5"/>
+        </MudOverlay>
     </MudCardContent>
     <MudCardActions>
         <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await HandleRegisterAsync()">
@@ -60,7 +59,7 @@
 
 
 @code {
-    
+
     bool _isRegistering;
     MudForm _form = null!;
     string? _error;
@@ -118,5 +117,5 @@
     }
 
 
-    
+
 }

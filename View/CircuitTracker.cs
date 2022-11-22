@@ -3,10 +3,9 @@
 namespace View;
 
 public class CircuitTracker : CircuitHandler {
-    
     private readonly ProtectedLocalStorage _local;
-    private readonly IThemeHandler _theme;
     private readonly ILogger<CircuitTracker> _logger;
+    private readonly IThemeHandler _theme;
 
     public CircuitTracker(IThemeHandler theme, ProtectedLocalStorage local, ILogger<CircuitTracker> logger) {
         _theme = theme;
@@ -25,7 +24,7 @@ public class CircuitTracker : CircuitHandler {
 
             _theme.UpdateAll(theme);
         }
-        catch(CryptographicException ex) {
+        catch (CryptographicException ex) {
             _logger.LogError(ex, "Failed to decrypt localstorage");
             await _local.DeleteAsync("Theme");
             await _local.DeleteAsync("Id");
