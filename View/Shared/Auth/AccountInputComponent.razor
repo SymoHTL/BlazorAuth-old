@@ -1,0 +1,51 @@
+﻿<MudPaper class="ml-5 p-4 position-relative rounded-r-xl" Outlined="true" Elevation="5" Square="true">
+
+    @if (ErrorMessage is not null) {
+        <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => ErrorMessage = null">
+            @(ErrorMessage)
+        </MudAlert>
+    }
+    <MudTextField
+        T="string"
+        InputMode="InputMode.text" InputType="InputType.Text" Immediate="true"
+        Counter="32" MaxLength="32" OnlyValidateIfDirty="true"
+        Label="Username" HelperText="Min. 4, Max. 50 characters | Allowed chars: A-Z 0-9 . _ - "
+        @bind-Value="User.Username"
+        For="() => User.Username"/>
+    <MudTextField
+        T="string"
+        InputMode="InputMode.text" InputType="InputType.Text" Immediate="true"
+        Counter="50" MaxLength="50"
+        Label="Email" OnlyValidateIfDirty="true"
+        @bind-Value="User.Email"
+        For="() => User.Email"/>
+
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveClick">Save</MudButton>
+
+    <MudOverlay Visible="IsLoading" DarkBackground="true" AutoClose="false" Absolute="true">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" StrokeWidth="5"/>
+    </MudOverlay>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> ErrorMessageChanged { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public User User { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback SaveClick { get; set; }
+
+}

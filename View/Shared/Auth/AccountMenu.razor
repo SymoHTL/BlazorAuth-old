@@ -14,10 +14,10 @@
                 <b>@UserService.CurrentUser?.Username</b>
             </MudText>
             <MudDivider Class="my-2"/>
-            <MudLink Href="auth/settings" Color="Color.Primary">
-                <MudIcon Icon="@Icons.Filled.Settings"></MudIcon>
-                Settings
-            </MudLink>
+            <MudNavLink Href="auth/settings" Match="NavLinkMatch.All">
+                <MudIcon Icon="@Icons.Filled.Settings"/>
+                <MudText Inline="true" Align="Align.Center">Settings</MudText>
+            </MudNavLink>
 
             <div class="mt-6 mx-4">
                 <MudButton Color="Color.Error"
@@ -45,8 +45,7 @@
             Logger.LogInformation("Logout canceled");
         }
         catch (Exception e) {
-            Logger.LogCritical("Logout failed: {Message} \n", e.Message);
-            Logger.LogCritical("Logout failed: {StackTrace} \n", e.StackTrace);
+            Logger.LogError(e, "Logout failed");
         }
     }
 

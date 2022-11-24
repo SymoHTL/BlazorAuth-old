@@ -51,4 +51,14 @@ public class UserRepository : ARepository<User>, IUserRepository {
 
         return user.ClearSensitiveData();
     }
+    
+    public async Task UpdateInfoAsync(User user, CancellationToken ct = default) {
+        // check if email is already taken
+        var emailExists = await Table.AnyAsync(u => u.Email == user.Email && u.Id != user.Id, ct);
+        if (emailExists) throw new DuplicateEmailException();
+
+        // update user
+        await UpdateAsync(user, ct);
+    }
+    
 }

@@ -50,7 +50,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
             var authState = new AuthenticationState(new ClaimsPrincipal(identity));
 
             SetCachedState(authState);
-
+            NotifyAuthenticationStateChanged(Task.FromResult(authState));
             return authState;
         }
         catch (InvalidOperationException) {

@@ -5,4 +5,6 @@ public interface IUserRepository : IRepository<User> {
     Task<User?> AuthorizeAsync(int id, CancellationToken ct = default);
     Task<User?> AuthorizeAsync(string token, CancellationToken ct = default);
     Task<User?> AuthorizeAsync(LoginModel model, CancellationToken ct = default);
+
+    Task UpdateInfoAsync(User user, CancellationToken ct = default);
 }

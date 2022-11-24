@@ -17,3 +17,10 @@
     color: white;
     background: var(--mud-palette-secondary);
 }
+
+.min-w-50{
+    min-width: 50%;
+}
+
+/*
+mud-list-item mud-list-item-gutters mud-list-item-clickable mud-ripple*/

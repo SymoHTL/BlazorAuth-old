@@ -13,6 +13,7 @@ public class User {
 
     [Required]
     [EmailAddress]
+    [DataType(DataType.EmailAddress)]
     [Column("EMAIL", TypeName = "VARCHAR(50)")]
     public string Email { get; set; } = null!;
 
