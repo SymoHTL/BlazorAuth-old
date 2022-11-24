@@ -14,6 +14,10 @@
                 <b>@UserService.CurrentUser?.Username</b>
             </MudText>
             <MudDivider Class="my-2"/>
+            <MudLink Href="auth/settings" Color="Color.Primary">
+                <MudIcon Icon="@Icons.Filled.Settings"></MudIcon>
+                Settings
+            </MudLink>
 
             <div class="mt-6 mx-4">
                 <MudButton Color="Color.Error"
@@ -29,9 +33,6 @@
 </MudMenu>
 
 @code {
-
-    [Parameter]
-    public AuthenticationState AuthenticationState { get; set; } = null!;
 
     private async void LogOut() {
         try {
