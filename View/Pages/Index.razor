@@ -1,20 +1,16 @@
 @page "/"
 @inject UserService UserService
 
-<h1>Welcome to my template.</h1>
 
-
-<MudLink Typo="Typo.h1" Color="Color.Primary" Href="https://mudblazor.com/" Target="_blank">Check out Mudblazor</MudLink>
+<MudText Typo="Typo.h1" Color="Color.Primary">Welcome to my template.</MudText>
 
 @*PageTitle is set in App.razor*@
 
 <AuthorizeView>
     <Authorized>
         <MudText>
-            @* either this or you can use UserService.CurrentUser (CurrentUser should be set if the user is authorized) *@
+            @* you can use UserService.CurrentUser (CurrentUser should be set if the user is authorized) *@
             @UserService.CurrentUser?.Username
-            <br/>
-            @context.User.Identity?.Name
         </MudText>
     </Authorized>
     <Authorizing>
@@ -25,8 +21,16 @@
     </NotAuthorized>
 </AuthorizeView>
 
+<DataInit Data="DataYouLoadFromSomeWhere">
+    <MudText>Now DataYouLoadFromSomeWhere is set to an object reference!</MudText>
+</DataInit>
+
+
+
 
 @code {
+
+    public object? DataYouLoadFromSomeWhere { get; set; }
 
     protected override async Task OnInitializedAsync() {
         if (await UserService.IsAuthenticated()) {

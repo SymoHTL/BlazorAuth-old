@@ -1,0 +1,14 @@
+﻿@if (Msg is not null) {
+    <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => Msg = null">
+        @Msg
+    </MudAlert>
+}
+
+@code {
+    [Parameter]
+    public string? Msg { get; set; }
+    
+    [Parameter]
+    [Obsolete("Use @bind-Msg instead")]
+    public EventCallback<string?> MsgChanged { get; set; }
+}

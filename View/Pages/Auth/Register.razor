@@ -9,13 +9,10 @@
         <MudText Typo="Typo.h5">Register</MudText>
     </MudCardHeader>
     <MudCardContent>
+        <ErrorMsg @bind-Msg="_error"/>
+        <SuccessMsg @bind-Msg="_success"/>
         <div @onkeydown="@TryRegister">
             <MudForm @ref="_form">
-                @if (_error is not null) {
-                    <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => _error = null">
-                        @(_error)
-                    </MudAlert>
-                }
                 <MudTextField
                     T="string"
                     InputMode="InputMode.text" InputType="InputType.Text" Immediate="true"
@@ -63,6 +60,7 @@
     bool _isRegistering;
     MudForm _form = null!;
     string? _error;
+    string? _success;
 
     bool _isShow;
     string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -88,26 +86,36 @@
             await HandleRegisterAsync();
     }
 
+    void SetError(string msg) {
+        _error = msg;
+        _success = null;
+    }
+
     async Task HandleRegisterAsync() {
         try {
             if (!await _form.IsFormValidAsync()) return;
+            _error = null;
             _isRegistering = true;
             await UserService.RegisterAsync(RegUser);
             await UserService.LoginAsync(new LoginModel(RegUser.Email, RegUser.LoginPassword));
+            _success = "Registration successful!";
         }
         catch (DuplicateEmailException) {
-            _error = "Invalid email!";
+            SetError("Invalid email!");
         }
         catch (LoginException) {
-            _error = "Invalid email or Password!";
+            SetError("Invalid email or Password!");
         }
         catch (TaskCanceledException) {
+            SetError("Request timed out! Please try again later.");
             Logger.LogInformation("Register/Login canceled");
         }
         catch (OperationCanceledException) {
+            SetError("Request timed out! Please try again later.");
             Logger.LogInformation("Register/Login canceled");
         }
         catch (Exception e) {
+            SetError("An error occurred! Please try again later.");
             Logger.LogError(e, "Register/Login failed");
         }
         finally {

@@ -16,13 +16,10 @@
         </AuthorizeView>
     </MudCardHeader>
     <MudCardContent>
+        <ErrorMsg @bind-Msg="_error"/>
+        <SuccessMsg @bind-Msg="_success"/>
         <div @onkeydown="@TryLogin">
             <MudForm @ref="_from">
-                @if (_error is not null) {
-                    <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => _error = null">
-                        @(_error)
-                    </MudAlert>
-                }
                 <MudTextField
                     T="string" Immediate="true" InputType="InputType.Text" InputMode="InputMode.text"
                     Label="Email"
@@ -42,7 +39,7 @@
         </MudOverlay>
     </MudCardContent>
     <MudCardActions>
-        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await HandleLoginAsync()">Login</MudButton>
+        <MudButton Disabled="_isLoggingIn" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await HandleLoginAsync()">Login</MudButton>
         <MudSpacer/>
         <a href="auth/register">
             <MudText Typo="Typo.subtitle1">
@@ -58,6 +55,7 @@
 
     MudForm _from = null!;
     string? _error;
+    string? _success;
 
     bool _isShow;
     string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -83,24 +81,34 @@
         if (e.Code is "Enter" or "NumpadEnter")
             await HandleLoginAsync();
     }
+    
+    void SetError(string msg) {
+        _error = msg;
+        _success = null;
+    }
 
     async Task HandleLoginAsync() {
         try {
             if (!await _from.IsFormValidAsync()) return;
+            _error = null;
             _isLoggingIn = true;
             await UserService.LoginAsync(Model);
+            _success = "Login successful!";
         }
         catch (LoginException) {
     // this is the only exception that can be thrown by the login method (we wrote that ourselves :))
-            _error = "Invalid username or password";
+            SetError("Invalid username or password");
         }
         catch (TaskCanceledException) {
+            SetError("Request timed out! Please try again later.");
             Logger.LogInformation("Login canceled");
         }
         catch (OperationCanceledException) {
+            SetError("Request timed out! Please try again later.");
             Logger.LogInformation("Login canceled");
         }
         catch (Exception e) {
+            SetError("An error occurred! Please try again later.");
             Logger.LogError(e, "Login failed");
         }
         finally {
