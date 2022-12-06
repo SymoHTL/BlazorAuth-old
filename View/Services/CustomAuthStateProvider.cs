@@ -53,6 +53,10 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
             NotifyAuthenticationStateChanged(Task.FromResult(authState));
             return authState;
         }
+        catch (CryptographicException) {
+            await _local.DeleteAsync("id");
+            return Anonymous; // token encryption has changed
+        }
         catch (InvalidOperationException) {
             return Anonymous; // most likely because of JavaScript interop
         }
