@@ -1,5 +1,4 @@
-﻿namespace Domain.Exceptions.TokenExceptions; 
+﻿namespace Domain.Exceptions.TokenExceptions;
 
 public class TokenExpiredException : TokenException {
-    
 }

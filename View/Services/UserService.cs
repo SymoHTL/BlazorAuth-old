@@ -2,11 +2,12 @@
 
 public class UserService {
     private readonly CustomAuthStateProvider _authenticationStateProvider;
-
-    private readonly IUserRepository _userRepository;
     private readonly ITokenRepository _tokenRepository;
 
-    public UserService(AuthenticationStateProvider authenticationStateProvider, IUserRepository userRepository, ITokenRepository tokenRepository) {
+    private readonly IUserRepository _userRepository;
+
+    public UserService(AuthenticationStateProvider authenticationStateProvider, IUserRepository userRepository,
+        ITokenRepository tokenRepository) {
         _authenticationStateProvider = authenticationStateProvider
                                            as CustomAuthStateProvider ??
                                        throw new NullReferenceException(

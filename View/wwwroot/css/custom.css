@@ -18,7 +18,7 @@
     background: var(--mud-palette-secondary);
 }
 
-.min-w-50{
+.min-w-50 {
     min-width: 50%;
 }
 
@@ -26,36 +26,37 @@
 mud-list-item mud-list-item-gutters mud-list-item-clickable mud-ripple*/
 
 
-.mud-scroll-to-top.visible{
-    position: fixed!important;
+.mud-scroll-to-top.visible {
+    position: fixed !important;
     bottom: 0 !important;
-    right: 56px!important;
+    right: 56px !important;
 }
 
-.mud-scroll-to-top button{
+.mud-scroll-to-top button {
     border-radius: 0;
-    width: 56px!important;
-    height: 40px!important;
+    width: 56px !important;
+    height: 40px !important;
     border-top-left-radius: 24px !important;
     border-top-right-radius: 24px !important;
 }
-.token-list{
+
+.token-list {
     max-height: 60vh;
     overflow-y: auto;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-    
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+
 }
 
-.token-list::-webkit-scrollbar{
+.token-list::-webkit-scrollbar {
     display: none;
 }
 
-.disable-scrollbar::-webkit-scrollbar{
+.disable-scrollbar::-webkit-scrollbar {
     display: none;
 }
 
-.disable-scrollbar{
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+.disable-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }

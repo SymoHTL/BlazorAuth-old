@@ -36,7 +36,7 @@ public class ModelDbContext : DbContext {
             .HasOne(t => t.User)
             .WithMany(u => u.Tokens)
             .HasForeignKey(t => t.UserId);
-        
+
         // N:M
 
         builder.Entity<RoleClaim>()

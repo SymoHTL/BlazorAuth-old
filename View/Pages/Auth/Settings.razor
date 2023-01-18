@@ -14,7 +14,7 @@
     </MudTabPanel>
     <MudTabPanel Text="TOKENS">
         <DataInit T="List<Token>" Data="Tokens" Context="tokens">
-            <TokenList Tokens="tokens" @bind-ErrorMessage="_error" OnTokenDeactivate="HandleTokenDeactivation" OnTokenReactivate="HandleTokenReactivation" OnTokenDelete="HandleTokenDeletion" />
+            <TokenList Tokens="tokens" @bind-ErrorMessage="_error" OnTokenDeactivate="HandleTokenDeactivation" OnTokenReactivate="HandleTokenReactivation" OnTokenDelete="HandleTokenDeletion"/>
         </DataInit>
     </MudTabPanel>
 </MudTabs>

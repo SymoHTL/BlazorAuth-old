@@ -14,17 +14,8 @@ public class TokenRepository : ARepository<Token>, ITokenRepository {
         if (token.ExpirationDate <= DateTime.UtcNow) throw new TokenExpiredException();
         if (token.Deleted) throw new TokenDeletedException();
         if (!token.IsActive) throw new TokenUnValidException();
-        
-        return token;
-    }
 
-    private async Task<Token?> FindByIpAndUserAgentAsync(string ipAddress, string userAgent, CancellationToken ct = default) {
-        return await Table
-            .FirstOrDefaultAsync(t => t.IpAddress == ipAddress &&
-                                      t.UserAgent == userAgent &&
-                                      t.IsActive &&
-                                      !t.Deleted &&
-                t.ExpirationDate > DateTime.UtcNow, ct);
+        return token;
     }
 
     public async Task<string> RequestTokenAsync(User user, CancellationToken ct) {
@@ -45,8 +36,8 @@ public class TokenRepository : ARepository<Token>, ITokenRepository {
         await UpdateAsync(token, ct);
         return token.Value;
     }
-    
-    
+
+
     public async Task SetDeletedAsync(Token token, CancellationToken ctsToken) {
         token.Deleted = true;
         await UpdateAsync(token, ctsToken);
@@ -75,5 +66,13 @@ public class TokenRepository : ARepository<Token>, ITokenRepository {
             .ToListAsync(ctsToken);
     }
 
-    
+    private async Task<Token?> FindByIpAndUserAgentAsync(string ipAddress, string userAgent,
+        CancellationToken ct = default) {
+        return await Table
+            .FirstOrDefaultAsync(t => t.IpAddress == ipAddress &&
+                                      t.UserAgent == userAgent &&
+                                      t.IsActive &&
+                                      !t.Deleted &&
+                                      t.ExpirationDate > DateTime.UtcNow, ct);
+    }
 }

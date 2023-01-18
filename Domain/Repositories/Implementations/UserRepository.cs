@@ -1,8 +1,8 @@
 ﻿namespace Domain.Repositories.Implementations;
 
 public class UserRepository : ARepository<User>, IUserRepository {
-    
     private readonly ITokenRepository _tokenRepository;
+
     public UserRepository(ModelDbContext context, ITokenRepository tokenRepository) : base(context) {
         _tokenRepository = tokenRepository;
     }
@@ -30,10 +30,10 @@ public class UserRepository : ARepository<User>, IUserRepository {
 
     public async Task<User?> AuthorizeAsync(string tokenValue, CancellationToken ct = default) {
         var token = await _tokenRepository.FindByValueAsync(tokenValue, ct);
-        
+
         await _tokenRepository.LoginAsync(token, ct);
-        
-        
+
+
         return await AuthorizeAsync(token.UserId, ct);
     }
 
@@ -50,7 +50,7 @@ public class UserRepository : ARepository<User>, IUserRepository {
 
         return user.ClearSensitiveData();
     }
-    
+
     public async Task UpdateInfoAsync(User user, CancellationToken ct = default) {
         // check if email is already taken
         var emailExists = await Table.AnyAsync(u => u.Email == user.Email && u.Id != user.Id, ct);
@@ -59,5 +59,4 @@ public class UserRepository : ARepository<User>, IUserRepository {
         // update user
         await UpdateAsync(user, ct);
     }
-    
 }

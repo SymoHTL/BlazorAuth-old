@@ -18,6 +18,7 @@
 </CascadingAuthenticationState>
 
 @code {
+
     protected override void OnInitialized() {
         RequestStore.Request = HttpContextAccessor.HttpContext?.Request;
         RequestStore.IpAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress;

@@ -5,10 +5,12 @@
 }
 
 @code {
+
     [Parameter]
     public string? Msg { get; set; }
-    
+
     [Parameter]
     [Obsolete("Use @bind-Msg instead")]
     public EventCallback<string?> MsgChanged { get; set; }
+
 }
