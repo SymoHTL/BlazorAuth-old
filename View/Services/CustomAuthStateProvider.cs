@@ -1,4 +1,6 @@
-﻿namespace View.Services;
+﻿using Domain.Exceptions.TokenExceptions;
+
+namespace View.Services;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider {
     private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
@@ -54,11 +56,15 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
             return authState;
         }
         catch (CryptographicException) {
-            await _local.DeleteAsync("id");
+            await _local.DeleteAsync("token");
             return Anonymous; // token encryption has changed
         }
         catch (InvalidOperationException) {
             return Anonymous; // most likely because of JavaScript interop
+        }
+        catch (TokenException) {
+            await _local.DeleteAsync("token");
+            return Anonymous; // token is invalid or expired or has been tampered with or deleted
         }
         catch (Exception e) {
             _logger.LogError(e, "Error while getting authentication state");
@@ -68,9 +74,9 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
 
     private async Task<User?> GetUserAsync() {
         // auth with id
-        var id = await _local.GetAsync<int>("id");
+        var token = await _local.GetAsync<string>("token");
 
-        if (id is { Success: true, Value: not 0 }) return await _userRepository.AuthorizeAsync(id.Value);
+        if (token is { Success: true, Value: not null }) return await _userRepository.AuthorizeAsync(token.Value);
 
         return null;
     }
@@ -84,7 +90,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
         return claims;
     }
 
-    public async Task Login(User user) {
+    public async Task Login(User user, string token) {
         ClearCache();
         CurrentUser = user;
         var authState =
@@ -93,13 +99,13 @@ public class CustomAuthStateProvider : AuthenticationStateProvider {
         SetCachedState(authState);
 
         NotifyAuthenticationStateChanged(Task.FromResult(authState));
-        await _local.SetAsync("id", user.Id);
+        await _local.SetAsync("token", token);
     }
 
     public async Task Logout() {
         CurrentUser = null;
         ClearCache();
-        await _local.DeleteAsync("id");
+        await _local.DeleteAsync("token");
         //await _local.DeleteAsync("token");
         //await _local.DeleteAsync("login");
         NotifyAuthenticationStateChanged(Task.FromResult(Anonymous));

@@ -1,0 +1,61 @@
+﻿<MudPaper class="ml-5 p-4 position-relative rounded-r-xl token-list" Outlined="true" Elevation="5" Square="true">
+    @if (ErrorMessage is not null) {
+        <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => { ErrorMessage = null; ErrorMessageChanged.InvokeAsync(null); }">
+            @(ErrorMessage)
+        </MudAlert>
+    }
+    <MudList Clickable="false">
+        @foreach (var token in Tokens) {
+            <MudListItem>
+                <MudIcon Size="Size.Large" Icon="@token.GetIcon()"></MudIcon>
+                <div class="d-flex justify-content-between">
+                    <MudText Typo="Typo.h6">@token.GetDevice()</MudText>
+                    <MudText Typo="Typo.h6">@token.IpAddress</MudText>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <MudTooltip Text="@token.LastLoginDate.ToString(CultureInfo.InvariantCulture)" Arrow="true" Placement="Placement.Top">
+                        <MudText Typo="Typo.body1">Last login: @token.FormatLastLogin()</MudText>
+                    </MudTooltip>
+                    
+                    <span class="mx-4"></span>
+                    <MudText Typo="Typo.body1">Active: @token.FormatIsActive()</MudText>
+                </div>
+                <div class="d-flex justify-content-between">
+                    @if (token.IsActive) {
+                        <MudButton Class="my-3" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => OnTokenDeactivate.InvokeAsync(token)">Deactivate</MudButton>
+                    }
+                    else {
+                        <MudButton Class="my-3" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => OnTokenReactivate.InvokeAsync(token)">Reactivate</MudButton>
+                    }
+                    <MudButton Class="my-3" Variant="Variant.Filled" Color="Color.Error" OnClick="() => OnTokenDelete.InvokeAsync(token)">Delete</MudButton>
+                </div>
+            </MudListItem>
+        }
+    </MudList>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    [EditorRequired]
+    public List<Token> Tokens { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<Token> OnTokenDelete { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<Token> OnTokenDeactivate { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<Token> OnTokenReactivate { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> ErrorMessageChanged { get; set; }
+
+}

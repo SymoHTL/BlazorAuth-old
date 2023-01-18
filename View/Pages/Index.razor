@@ -1,10 +1,13 @@
 @page "/"
 @inject UserService UserService
-
+@inject RequestStore RequestStore
 
 <MudText Typo="Typo.h1" Color="Color.Primary">Welcome to my template.</MudText>
 
 @*PageTitle is set in App.razor*@
+
+<p>UserAgent = @RequestStore.Request?.Headers["User-Agent"]</p>
+<p>IPAddress = @RequestStore.IpAddress?.ToString()</p>
 
 <AuthorizeView>
     <Authorized>
@@ -24,8 +27,6 @@
 <DataInit Data="DataYouLoadFromSomeWhere">
     <MudText>Now DataYouLoadFromSomeWhere is set to an object reference!</MudText>
 </DataInit>
-
-
 
 
 @code {

@@ -7,6 +7,7 @@ public class ModelDbContext : DbContext {
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<RoleClaim> RoleClaims { get; set; } = null!;
+    public DbSet<Token> Tokens { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder) {
 // UNIQUE
@@ -19,6 +20,10 @@ public class ModelDbContext : DbContext {
             .HasIndex(r => r.Identifier)
             .IsUnique();
 
+        builder.Entity<Token>()
+            .HasIndex(t => t.Value)
+            .IsUnique();
+
 // HAS KEY
 
         builder.Entity<RoleClaim>()
@@ -26,6 +31,12 @@ public class ModelDbContext : DbContext {
         // RELATIONSHIPS
         // 1:1
         // 1:N
+
+        builder.Entity<Token>()
+            .HasOne(t => t.User)
+            .WithMany(u => u.Tokens)
+            .HasForeignKey(t => t.UserId);
+        
         // N:M
 
         builder.Entity<RoleClaim>()

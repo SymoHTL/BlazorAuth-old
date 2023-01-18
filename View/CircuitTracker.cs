@@ -27,7 +27,6 @@ public class CircuitTracker : CircuitHandler {
         catch (CryptographicException ex) {
             _logger.LogError(ex, "Failed to decrypt localstorage");
             await _local.DeleteAsync("Theme");
-            await _local.DeleteAsync("Id");
         }
         catch (Exception e) {
             _logger.LogError(e, "Failed to read from localstorage");

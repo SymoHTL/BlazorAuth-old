@@ -28,6 +28,8 @@ public class User {
 
     public List<RoleClaim> RoleClaims { get; set; } = new();
 
+    public List<Token> Tokens { get; set; } = new();
+
     [NotMapped] public IEnumerable<string> PlainRoles => RoleClaims.Select(x => x.Role.Identifier);
 
 

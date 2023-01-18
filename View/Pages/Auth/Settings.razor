@@ -1,6 +1,7 @@
 ﻿@page "/auth/settings"
 @inject UserService UserService
 @inject IUserRepository UserRepo
+@inject ITokenRepository TokenRepo
 @inject ILogger<Settings> Logger
 @inherits CancellationComponent
 @attribute [Authorize]
@@ -11,6 +12,11 @@
             <AccountInputComponent User="UserService.CurrentUser" SaveClick="Save" IsLoading="_isLoading" @bind-ErrorMessage="_error"/>
         </MudForm>
     </MudTabPanel>
+    <MudTabPanel Text="TOKENS">
+        <DataInit T="List<Token>" Data="Tokens" Context="tokens">
+            <TokenList Tokens="tokens" @bind-ErrorMessage="_error" OnTokenDeactivate="HandleTokenDeactivation" OnTokenReactivate="HandleTokenReactivation" OnTokenDelete="HandleTokenDeletion" />
+        </DataInit>
+    </MudTabPanel>
 </MudTabs>
 
 @code {
@@ -18,8 +24,25 @@
     bool _isLoading;
     string? _error;
 
+    List<Token> Tokens { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync() {
+        try {
+            Tokens = await TokenRepo.ReadForUserAsync(UserService.CurrentUser!.Id, Cts.Token);
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Settings user-update canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Settings user-update canceled");
+        }
+        catch (Exception e) {
+            _error = "An error occurred!";
+            Logger.LogError(e, "Settings user-update failed");
+        }
+    }
+
     async Task Save() {
-        
         try {
             if (!await _form.IsFormValidAsync()) return;
             _isLoading = true;
@@ -41,6 +64,55 @@
         finally {
             _isLoading = false;
             StateHasChanged();
+        }
+    }
+
+    async Task HandleTokenDeletion(Token token) {
+        try {
+            await TokenRepo.SetDeletedAsync(token, Cts.Token);
+            Tokens.Remove(token);
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Action canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Action canceled");
+        }
+        catch (Exception e) {
+            _error = "An error occurred!";
+            Logger.LogError(e, "Action failed");
+        }
+    }
+
+    async Task HandleTokenReactivation(Token token) {
+        try {
+            await TokenRepo.SetActiveAsync(token, Cts.Token);
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Action canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Action canceled");
+        }
+        catch (Exception e) {
+            _error = "An error occurred!";
+            Logger.LogError(e, "Action failed");
+        }
+    }
+
+    async Task HandleTokenDeactivation(Token token) {
+        try {
+            await TokenRepo.SetInactiveAsync(token, Cts.Token);
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Action canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Action canceled");
+        }
+        catch (Exception e) {
+            _error = "An error occurred!";
+            Logger.LogError(e, "Action failed");
         }
     }
 

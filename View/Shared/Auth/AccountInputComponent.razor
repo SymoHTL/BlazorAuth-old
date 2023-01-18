@@ -1,7 +1,7 @@
 ﻿<MudPaper class="ml-5 p-4 position-relative rounded-r-xl" Outlined="true" Elevation="5" Square="true">
 
     @if (ErrorMessage is not null) {
-        <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => ErrorMessage = null">
+        <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="() => { ErrorMessage = null; ErrorMessageChanged.InvokeAsync(null); }">
             @(ErrorMessage)
         </MudAlert>
     }

@@ -1,3 +1,6 @@
+@inject IHttpContextAccessor HttpContextAccessor
+@inject RequestStore RequestStore
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
@@ -13,3 +16,11 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    protected override void OnInitialized() {
+        RequestStore.Request = HttpContextAccessor.HttpContext?.Request;
+        RequestStore.IpAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+    }
+
+}

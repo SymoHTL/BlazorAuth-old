@@ -13,6 +13,7 @@ global using View;
 global using System.Diagnostics;
 global using System.Security.Claims;
 global using Domain.Exceptions;
+global using Domain.Services.Implementations;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.RazorPages;

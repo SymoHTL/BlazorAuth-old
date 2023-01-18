@@ -39,3 +39,23 @@ mud-list-item mud-list-item-gutters mud-list-item-clickable mud-ripple*/
     border-top-left-radius: 24px !important;
     border-top-right-radius: 24px !important;
 }
+.token-list{
+    max-height: 60vh;
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    
+}
+
+.token-list::-webkit-scrollbar{
+    display: none;
+}
+
+.disable-scrollbar::-webkit-scrollbar{
+    display: none;
+}
+
+.disable-scrollbar{
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}

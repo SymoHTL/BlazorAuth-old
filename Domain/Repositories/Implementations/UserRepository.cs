@@ -1,7 +1,10 @@
 ﻿namespace Domain.Repositories.Implementations;
 
 public class UserRepository : ARepository<User>, IUserRepository {
-    public UserRepository(ModelDbContext context) : base(context) {
+    
+    private readonly ITokenRepository _tokenRepository;
+    public UserRepository(ModelDbContext context, ITokenRepository tokenRepository) : base(context) {
+        _tokenRepository = tokenRepository;
     }
 
 
@@ -25,17 +28,13 @@ public class UserRepository : ARepository<User>, IUserRepository {
         return user?.ClearSensitiveData();
     }
 
-    public Task<User?> AuthorizeAsync(string token, CancellationToken ct = default) {
-        throw new NotImplementedException("Bababum");
-/*
-        var user = await Table
-            .Include(u => u.RoleClaims)
-            .ThenInclude(rc => rc.Role)
-            .AsSplitQuery() // <--- this is the magic
-            .FirstOrDefaultAsync(u => false, ct);
+    public async Task<User?> AuthorizeAsync(string tokenValue, CancellationToken ct = default) {
+        var token = await _tokenRepository.FindByValueAsync(tokenValue, ct);
         
-        return user?.ClearSensitiveData();
-*/
+        await _tokenRepository.LoginAsync(token, ct);
+        
+        
+        return await AuthorizeAsync(token.UserId, ct);
     }
 
     public async Task<User?> AuthorizeAsync(LoginModel model, CancellationToken ct = default) {
