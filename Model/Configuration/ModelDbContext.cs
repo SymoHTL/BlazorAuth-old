@@ -28,6 +28,9 @@ public class ModelDbContext : DbContext {
 
         builder.Entity<RoleClaim>()
             .HasKey(rc => new { rc.UserId, rc.RoleId });
+        
+        builder.Entity<RoleRequest>()
+            .HasKey(rc => new { rc.UserId, rc.RoleId });
         // RELATIONSHIPS
         // 1:1
         // 1:N
@@ -39,6 +42,17 @@ public class ModelDbContext : DbContext {
 
         // N:M
 
+        builder.Entity<RoleRequest>()
+            .HasOne(rr => rr.Role)
+            .WithMany(r => r.RoleRequests)
+            .HasForeignKey(rr => rr.RoleId);
+        
+        builder.Entity<RoleRequest>()
+            .HasOne(rr => rr.User)
+            .WithMany(r => r.RoleRequests)
+            .HasForeignKey(rr => rr.UserId);
+        
+        
         builder.Entity<RoleClaim>()
             .HasOne(rc => rc.Role)
             .WithMany(r => r.RoleClaims)

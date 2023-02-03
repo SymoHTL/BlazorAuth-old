@@ -1,6 +1,9 @@
 ﻿@page "/auth/settings"
 @inject UserService UserService
 @inject IUserRepository UserRepo
+@inject IRoleRepository RoleRepo
+@inject IRoleClaimRepository RoleClaimRepo
+@inject IRoleRequestRepository RoleRequestRepo
 @inject ITokenRepository TokenRepo
 @inject ILogger<Settings> Logger
 @inherits CancellationComponent
@@ -8,7 +11,7 @@
 
 <MudTabs Position="Position.Left" Border="true" Outlined="true" Elevation="5" Rounded="true">
     <MudTabPanel Text="General">
-        <MudForm @ref="_form">
+        <MudForm @ref="_accountForm">
             <AccountInputComponent User="UserService.CurrentUser" SaveClick="Save" IsLoading="_isLoading" @bind-ErrorMessage="_error"/>
         </MudForm>
     </MudTabPanel>
@@ -17,18 +20,79 @@
             <TokenList Tokens="tokens" @bind-ErrorMessage="_error" OnTokenDeactivate="HandleTokenDeactivation" OnTokenReactivate="HandleTokenReactivation" OnTokenDelete="HandleTokenDeletion"/>
         </DataInit>
     </MudTabPanel>
+    <MudTabPanel Text="ROLES">
+        <DataInit T="List<Role>" Data="Roles" Context="roles">
+            <DataInit T="List<RoleRequest>" Data="Requests" Context="requests">
+                <MudPaper class="ml-5 p-4 position-relative rounded-r-xl" Outlined="true" Elevation="5" Square="true">
+                    <MudForm @ref="_requestRoleForm">
+                        <MudAutocomplete T="Role" Label="Role" @bind-Value="RequestedRole" SearchFunc="@SearchForRoles"
+                                         ResetValueOnEmptyText="true" ToStringFunc="role => role.Identifier"
+                                         CoerceText="true"/>
+                        <MudButton Class="my-3" Variant="Variant.Filled" Color="Color.Primary" OnClick="RequestRole">Submit</MudButton>
+                    </MudForm>
+                    <MudList Clickable="false">
+                        <MudText Typo="Typo.h5">Requests</MudText>
+                        @foreach (var request in Requests) {
+                            <MudListItem>
+                                <MudText Typo="Typo.h6">@request.Role.Identifier</MudText>
+                                <MudText Typo="Typo.h6">@request.Role.Description</MudText>
+                                <MudText Typo="Typo.h6">@request.RequestDate</MudText>
+                                <MudButton Class="my-3" Variant="Variant.Filled" Color="Color.Warning" OnClick="() => DeleteRequest(request)">Delete</MudButton>
+                            </MudListItem>
+                        }
+                    </MudList>
+                    <MudDivider/>
+                    <MudList Clickable="false">
+                        <MudText Typo="Typo.h5">Roles</MudText>
+                        @foreach (var role in Roles) {
+                            <MudListItem>
+                                <MudText Typo="Typo.h6">@role.Identifier</MudText>
+                                <MudText Typo="Typo.body1">@role.Description</MudText>
+                            </MudListItem>
+                        }
+                    </MudList>
+                </MudPaper>
+            </DataInit>
+        </DataInit>
+    </MudTabPanel>
+
 </MudTabs>
 
 @code {
-    MudForm _form = null!;
+    MudForm _accountForm = null!;
+    MudForm _requestRoleForm = null!;
     bool _isLoading;
     string? _error;
 
     List<Token> Tokens { get; set; } = null!;
 
+    List<Role> Roles { get; set; } = null!;
+
+    List<RoleRequest> Requests { get; set; } = null!;
+
+    Role RequestedRole { get; set; } = new();
+
     protected override async Task OnInitializedAsync() {
         try {
             Tokens = await TokenRepo.ReadForUserAsync(UserService.CurrentUser!.Id, Cts.Token);
+            Roles = await RoleClaimRepo.ReadRolesByUserIdAsync(UserService.CurrentUser!.Id, Cts.Token);
+            Requests = await RoleRequestRepo.GetByUserIdAsync(UserService.CurrentUser!.Id, Cts.Token);
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Settings user-update canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Settings user-update canceled");
+        }
+        catch (Exception e) {
+            _error = "An error occurred!";
+            Logger.LogError(e, "Settings user-update failed");
+        }
+    }
+
+    async Task RequestRole() {
+        try {
+            await RoleRequestRepo.CreateRequestAsync(UserService.CurrentUser!, RequestedRole, Cts.Token);
         }
         catch (TaskCanceledException) {
             Logger.LogInformation("Settings user-update canceled");
@@ -44,9 +108,10 @@
 
     async Task Save() {
         try {
-            if (!await _form.IsFormValidAsync()) return;
+            if (!await _accountForm.IsFormValidAsync()) return;
             _isLoading = true;
             await UserRepo.UpdateInfoAsync(UserService.CurrentUser!, Cts.Token);
+            await InvokeAsync(StateHasChanged);
         }
         catch (DuplicateEmailException) {
             _error = "Invalid email!";
@@ -71,6 +136,7 @@
         try {
             await TokenRepo.SetDeletedAsync(token, Cts.Token);
             Tokens.Remove(token);
+            await InvokeAsync(StateHasChanged);
         }
         catch (TaskCanceledException) {
             Logger.LogInformation("Action canceled");
@@ -87,6 +153,7 @@
     async Task HandleTokenReactivation(Token token) {
         try {
             await TokenRepo.SetActiveAsync(token, Cts.Token);
+            await InvokeAsync(StateHasChanged);
         }
         catch (TaskCanceledException) {
             Logger.LogInformation("Action canceled");
@@ -103,6 +170,7 @@
     async Task HandleTokenDeactivation(Token token) {
         try {
             await TokenRepo.SetInactiveAsync(token, Cts.Token);
+            await InvokeAsync(StateHasChanged);
         }
         catch (TaskCanceledException) {
             Logger.LogInformation("Action canceled");
@@ -112,6 +180,30 @@
         }
         catch (Exception e) {
             _error = "An error occurred!";
+            Logger.LogError(e, "Action failed");
+        }
+    }
+
+    async Task<IEnumerable<Role>> SearchForRoles(string arg) {
+        if (string.IsNullOrEmpty(arg) || string.IsNullOrWhiteSpace(arg)) {
+            return await RoleRepo.ReadForRequestAsync(UserService.CurrentUser!.Id, Cts.Token);
+        }
+        return await RoleRepo.SearchForRoleAsync(arg, UserService.CurrentUser!.Id, Cts.Token);
+    }
+
+    async Task DeleteRequest(RoleRequest request) {
+        try {
+            await RoleRequestRepo.RejectRequestAsync(request, Cts.Token);
+            Requests.Remove(request);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (TaskCanceledException) {
+            Logger.LogInformation("Action canceled");
+        }
+        catch (OperationCanceledException) {
+            Logger.LogInformation("Action canceled");
+        }
+        catch (Exception e) {
             Logger.LogError(e, "Action failed");
         }
     }

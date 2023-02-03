@@ -16,4 +16,5 @@ public class Role {
     public List<RoleClaim> RoleClaims { get; set; } = new();
 
     [NotMapped] public IEnumerable<User> Users => RoleClaims.Select(rc => rc.User);
+    public List<RoleRequest> RoleRequests { get; set; } = new();
 }

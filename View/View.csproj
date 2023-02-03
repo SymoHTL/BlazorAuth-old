@@ -11,13 +11,13 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MudBlazor" Version="6.1.5"/>
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0-alpha.1"/>
+        <PackageReference Include="MudBlazor" Version="6.1.5" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Domain\Domain.csproj"/>
-        <ProjectReference Include="..\Model\Model.csproj"/>
+        <ProjectReference Include="..\Domain\Domain.csproj" />
+        <ProjectReference Include="..\Model\Model.csproj" />
     </ItemGroup>
 
 </Project>

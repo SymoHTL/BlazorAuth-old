@@ -23,6 +23,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleClaimRepository, RoleClaimRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IRoleRequestRepository, RoleRequestRepository>();
 
 builder.Services.AddScoped<RequestStore>();
 

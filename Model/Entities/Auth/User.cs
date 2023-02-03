@@ -31,6 +31,7 @@ public class User {
     public List<Token> Tokens { get; set; } = new();
 
     [NotMapped] public IEnumerable<string> PlainRoles => RoleClaims.Select(x => x.Role.Identifier);
+    public List<RoleRequest> RoleRequests { get; set; } = new();
 
 
     public User ClearSensitiveData() {
